@@ -44,6 +44,24 @@ bool updateGame() {
 	if (IsKeyDown(KEY_DOWN)) gameData.camera.target.y += 7.f * deltaTime;
 #pragma endregion
 
+	Vector2 worldPos = GetScreenToWorld2D(GetMousePosition(), gameData.camera);
+	int blockX = (int)floor(worldPos.x);
+	int blocky = (int)floor(worldPos.y);
+
+	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+		auto b = gameData.gameMap.getBlockSafe(blockX, blocky);
+		if (b) {
+			*b = {};
+		}
+	}
+
+	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+		auto b = gameData.gameMap.getBlockSafe(blockX, blocky);
+		if (b) {
+			b->type = Block::gold;
+		}
+	}
+
 	BeginMode2D(gameData.camera);
 
 	for (int y = 0; y < gameData.gameMap.h; y++) {
@@ -62,6 +80,15 @@ bool updateGame() {
 			}
 		}
 	}
+
+	DrawTexturePro(
+		assetManager.frame,
+		{0,0, (float)assetManager.frame.width, (float)assetManager.frame.height},
+		{(float)blockX, (float)blocky, 1, 1},
+		{0,0},
+		0.0f,
+		WHITE
+	);
 
 	EndMode2D();
 
